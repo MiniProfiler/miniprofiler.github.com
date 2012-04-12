@@ -134,7 +134,7 @@ using (profiler.Step("Doing complex stuff"))
     var cnn = CreateRealConnection(); // A SqlConnection, SqliteConnection ... or whatever
 
     // wrap the connection with a profiling connection that tracks timings 
-    return new MvcMiniProfiler.Data.ProfiledDbConnection(cnn, MiniProfiler.Current);
+    return new StackExchange.Profiling.Data.ProfiledDbConnection(cnn, MiniProfiler.Current);
 }
 </code></pre>
 
@@ -142,7 +142,7 @@ using (profiler.Step("Doing complex stuff"))
 
 <pre><code>  public static MyModel Get()
   {
-     var conn =  new MvcMiniProfiler.Data.EFProfiledDbConnection(GetConnection(), MiniProfiler.Current);
+     var conn =  new StackExchange.Profiling.Data.EFProfiledDbConnection(GetConnection(), MiniProfiler.Current);
      return ObjectContextUtils.CreateObjectContext&lt;MyModel&gt;(conn); // resides in the MiniProfiler.EF nuget pack
   }
 </code></pre>
@@ -153,7 +153,7 @@ using (profiler.Step("Doing complex stuff"))
 {
    public static DBContext Get()
    {
-      var conn = new MvcMiniProfiler.Data.ProfiledDbConnection(GetConnection(), MiniProfiler.Current);
+      var conn = new StackExchange.Profiling.Data.ProfiledDbConnection(GetConnection(), MiniProfiler.Current);
       return new DBContext(conn);
    }
 }
