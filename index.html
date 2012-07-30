@@ -129,7 +129,7 @@ using (profiler.Step("Doing complex stuff"))
 
 <p>The profiler includes powerful and comprehensive database profiling capabilities. To enable wrap your database connection with a profiling connection. </p>
 
-<p>The built in database profiler support any kind of DbConnection. It also supports Entity Framework and Linq-2-SQL. </p>
+<p>The built in database profiler supports any kind of DbConnection. It also supports Entity Framework and Linq-2-SQL.</p>
 
 <p>Usage: </p>
 
@@ -229,7 +229,24 @@ protected void Application_AuthenticateRequest(Object sender, EventArgs e)
 }
 </code></pre>
 
-<h3>Where is MiniProfiler used?</h3>
+<h2>Troubleshooting</h2>
+
+<h3>MiniProfiler isn't showing</h3>
+
+<ul>
+  <li>Run through the Getting Started steps again and double-check</li>
+  <li>If your <code>web.config</code> has the setting <code>runAllManagedModulesForAllRequests=false</code> then add the following to your <code>web.config</code> too:</li>
+</ul>
+
+<pre><code>&lt;system.webServer&gt;
+  ...
+  &lt;handlers&gt;
+    &lt;add name="MiniProfiler" path="mini-profiler-resources/*" verb="*" type="System.Web.Routing.UrlRoutingModule" resourceType="Unspecified" preCondition="integratedMode" /&gt;
+  &lt;/handlers&gt;
+&lt;/system.webServer&gt;
+</code></pre>
+
+<h2>Where is MiniProfiler used?</h2>
 
 <p>MiniProfiler was designed by the team at <a href="http://stackoverflow.com">Stack Overflow</a>. It is in production use there and on the <a href="http://stackexchange.com">Stack Exchange</a> family of sites. </p>
 
