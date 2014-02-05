@@ -138,7 +138,18 @@ using (profiler.Step("Doing complex stuff"))
 					<p>The built in database profiler supports any kind of DbConnection. It also supports Entity Framework and Linq-2-SQL.</p>
 					<h4>Usage: </h4>
 					<p>Use a factory to return your connection: </p>
-
+					
+					<ul class="nav nav-tabs">
+						<li class="active"><a href="#DbConnection" data-toggle="tab">DbConnection</a></li>
+						<li><a href="#L2S" data-toggle="tab">Linq-to-Sql</a></li>
+						<li><a href="#EF6" data-toggle="tab">EF 6+</a></li>
+						<li><a href="#EF5" data-toggle="tab">EF 4 and 5</a></li>
+						<li><a href="#RavenDb" data-toggle="tab">RavenDb</a></li>
+					</ul>
+					
+					<!-- Tab panes -->
+					<div class="tab-content connections">
+						<div class="tab-pane active" id="DbConnection">
 <pre><code>public static DbConnection GetOpenConnection()
 {
     var cnn = CreateRealConnection(); // A SqlConnection, SqliteConnection ... or whatever
@@ -147,18 +158,8 @@ using (profiler.Step("Doing complex stuff"))
     return new StackExchange.Profiling.Data.ProfiledDbConnection(cnn, MiniProfiler.Current);
 }
 </code></pre>
-
-					<h3>Entity Framework</h3>
-
-<pre><code>  public static MyModel Get()
-  {
-     var conn =  new StackExchange.Profiling.Data.EFProfiledDbConnection(GetConnection(), MiniProfiler.Current);
-     return ObjectContextUtils.CreateObjectContext&lt;MyModel&gt;(conn); // resides in the MiniProfiler.EF5 or MiniProfiler.EF6 nuget pack
-  }
-</code></pre>
-
-					<h3>LINQ-2-SQL</h3>
-
+						</div>
+						<div class="tab-pane" id="L2S">
 <pre><code>partial class DBContext
 {
    public static DBContext Get()
@@ -167,39 +168,71 @@ using (profiler.Step("Doing complex stuff"))
       return new DBContext(conn);
    }
 }
+</code></pre>					  
+						</div>
+						<div class="tab-pane" id="EF6">
+							<p>Install the <a href="https://www.nuget.org/packages/MiniProfiler.EF6/">MiniProfiler.EF6</a> nuget and use one line of code to initialize for all connections in the app:</p>
+<pre><code>using StackExchange.Profiling;
+...    
+protected void Application_Start()
+{
+    MiniProfilerEF6.Initialize();
+}
+</code></pre>							
+						</div>
+						<div class="tab-pane" id="EF5">
+							<p>Install the <a href="https://www.nuget.org/packages/MiniProfiler.EF5/">MiniProfiler.EF5 nuget</a> and use the following code to instantiate your connection:</p>
+<pre><code>
+using StackExchange.Profiling.Data;
+...
+public static MyModel Get()
+{
+	var conn =  new EFProfiledDbConnection(GetConnection(), MiniProfiler.Current);
+	return ObjectContextUtils.CreateObjectContext&lt;MyModel&gt;(conn);
+}
 </code></pre>
+							<strong>Entity Framework - Code First</strong>
 
-					<h3>Entity Framework - Code First</h3>
+							<p>MVC Mini Profiler can be hooked in to an EF code first project. To do so: </p>
 
-					<p>MVC Mini Profiler can be hooked in to an EF code first project. To do so: </p>
+							<p>Install the Nuget MiniProfiler.EF5 package: </p>
 
-					<p>Install the Nuget MiniProfiler.EF package: </p>
+							<p>Run: <code>MiniProfilerEF.Initialize(); // in Application_Start</code></p>
 
-					<p>Run: <code>MiniProfilerEF.Initialize(); // in Application_Start</code></p>
+							<p>That's it ... you are done!</p>
 
-					<p>That's it ... you are done!</p>
+							<p>Note: EF Code First will store table metadata in a table called: !EdmMetadata. This metadata uses the provider as part of the entity key. If you initialized your provider as a non-profiled provider, you will have to re-build this metadata. Deleting all the rows from !EdmMetadata may do the trick, alternatively some smarter providers are able to handle this transparently.  </p>
+							
+							<p><strong>EF 4.1 Update 1</strong></p>
 
-					<p>Note: EF Code First will store table metadata in a table called: !EdmMetadata. This metadata uses the provider as part of the entity key. If you initialized your provider as a non-profiled provider, you will have to re-build this metadata. Deleting all the rows from !EdmMetadata may do the trick, alternatively some smarter providers are able to handle this transparently.  </p>
+							<p>Note, that EF 4.1 Update 1 (the version currently on NuGet) has a breaking change which throws the following error when specifying a connection string:</p>
 
-					<p><strong>EF 4.1 Update 1</strong></p>
+							<p><code>The given assembly name or codebase was invalid. (Exception from HRESULT: 0x80131047)</code></p>
 
-					<p>Note, that EF 4.1 Update 1 (the version currently on NuGet) has a breaking change which throws the following error when specifying a connection string:</p>
+							<p>MiniProfiler attempts to resolve this issue by detecting the version of Entity Framework that it is running against. If this doesn't work (due to security exceptions), force the hack to be applied by replacing the <code>Initialize()</code> call with: </p>
 
-					<p><code>The given assembly name or codebase was invalid. (Exception from HRESULT: 0x80131047)</code></p>
+							<p><code>MiniProfilerEF.Initialize_EF42(); // in Application_Start</code></p>
 
-					<p>MiniProfiler attempts to resolve this issue by detecting the version of Entity Framework that it is running against. If this doesn't work (due to security exceptions), force the hack to be applied by replacing the <code>Initialize()</code> call with: </p>
+							<p>However, this is currently unable to profile SqlCE or Oracle databases. </p>
 
-					<p><code>MiniProfilerEF.Initialize_EF42(); // in Application_Start</code></p>
+							<p>To work around this an additional parameter has been added to the <code>Initialize</code> call:</p>
 
-					<p>However, this is currently unable to profile SqlCE or Oracle databases. </p>
+							<ul>
+								<li>If you specify connection strings explicitly in your <code>web.config</code>, use <code>MiniProfilerEF.Initialize();</code>. This will not profile SqlCE or Oracle databases</li>
+								<li>If you don't specify connection strings (automatically inferred) and want SqlCE support, use <code>MiniProfilerEF.Initialize(false);</code>.</li>
+							</ul>
+							<p>Note, this should be a temporary solution until EF 4.2 is widely available.</p>					  
+						</div>
+						<div class="tab-pane" id="RavenDb">
+							<p>Include the <a href="https://www.nuget.org/packages/MiniProfiler.Raven">MiniProfiler.Raven nuget package</a> and call <code>MiniProfilerRaven.InitializeFor(store)</code> when you initialize your Raven <code>DocumentStore</code> (please note that <code>EmbeddableDocumentStore</code>
+is not supported).
+<pre><code>var store = new DocumentStore();
+store.Initialize();
 
-					<p>To work around this an additional parameter has been added to the <code>Initialize</code> call:</p>
-
-					<ul>
-						<li>If you specify connection strings explicitly in your <code>web.config</code>, use <code>MiniProfilerEF.Initialize();</code>. This will not profile SqlCE or Oracle databases</li>
-						<li>If you don't specify connection strings (automatically inferred) and want SqlCE support, use <code>MiniProfilerEF.Initialize(false);</code>.</li>
-					</ul>
-					<p>Note, this should be a temporary solution until EF 4.2 is widely available.</p>
+// Initialize MiniProfiler
+MiniProfilerRaven.InitializeFor(store);</code></pre>				
+						</div>
+					</div>
 
 					<h2>Various features</h2>
 

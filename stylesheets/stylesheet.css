@@ -413,4 +413,7 @@ Small Device Styles
 }
 
 /* other custom stuff */
-
+.connections .tab-pane {
+	background: white;
+	padding: 10px;
+}
