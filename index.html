@@ -5,14 +5,14 @@
     <meta charset='utf-8' />
     <meta http-equiv="X-UA-Compatible" content="chrome=1" />
     <meta name="description" content="MiniProfiler: A simple but effective mini-profiler for .NET and Ruby." />
-
+	<link rel="stylesheet" href="http:///netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap-theme.min.css">
     <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
 
     <title>MiniProfiler</title>
   </head>
 
   <body>
-
     <!-- HEADER -->
     <div id="header_wrap" class="outer">
         <header class="inner">
@@ -50,13 +50,19 @@ See <a href="https://github.com/MiniProfiler/rack-mini-profiler">Github</a> and 
 <li>A pragmatic <code>Step</code> instrumentation that you can add to code you want to explicitly profile</li>
 </ul><p>Simple. Fast. Pragmatic. Useful.</p>
 
-<h3>What is included?</h3>
+<h2>Getting Started on .Net:</h2>
 
-<p>A single assembly, with an example ASP.NET and ASP.NET MVC project to show usage.</p>
+<p>Hook up your application with at least one of the following packages are available on nuget:
 
-<h2>Getting Started</h2>
-
-<p><code>MiniProfiler</code>, <code>MiniProfiler.EF</code> and <code>MiniProfiler.MVC</code> are available on <a href="http://nuget.org/packages?q=miniprofiler">nuget</a>.</p> 
+<ul>
+	<li><code>MiniProfiler</code> - The core. Needed for any profiling (all of the packages below list this as a dependency)</li>
+	<li><code>MiniProfiler.EF6</code> - For profiling Entity Framework version 6+</li>
+	<li><code>MiniProfiler.EF5</code> - For profiling Entity Framework versions 4 and 5</li>
+	<li><strike><code>MiniProfiler.EF</code></strike> - obsolete package. Please use one of the other EF packages above instead.</li>
+	<li><code>MiniProfiler.MVC3</code> - Profile MVC 3 websites</li>
+	<li><code>MiniProfiler.MVC4</code> - Profile MVC 4 and 5 websites</li>
+	<li><code>MiniProfiler.Raven</code> - Profile RavenDb connections</li>
+</ul>
 
 <pre style="background-color: #202020;border: 4px solid silver;border-radius: 5px;-moz-border-radius: 5px;-webkit-border-radius: 5px;box-shadow: 2px 2px 3px #6e6e6e;color: #E2E2E2;display: block;font: 1.5em 'andale mono', 'lucidaconsole', monospace;line-height: 1.5em;overflow: auto;padding: 15px;">PM> Install-Package MiniProfiler</pre>
 
@@ -75,8 +81,10 @@ See <a href="https://github.com/MiniProfiler/rack-mini-profiler">Github</a> and 
 <p>For requests that aren't being profiled, nothing will be written.</p>
 
 <ul>
-<li>Decide when you want to profile; perhaps for local requests, perhaps for special users (developers, admins, test team, whatever).</li>
-</ul><p>The sample project starts profiling in <code>Global.asax.cs</code> <code>Application_BeginRequest</code>:</p>
+	<li>Decide when you want to profile; perhaps for local requests, perhaps for special users (developers, admins, test team, whatever).</li>
+</ul>
+
+<p>The sample project starts profiling in <code>Global.asax.cs</code> <code>Application_BeginRequest</code>:</p>
 
 <pre><code>using StackExchange.Profiling;
 ...    
@@ -149,7 +157,7 @@ using (profiler.Step("Doing complex stuff"))
 <pre><code>  public static MyModel Get()
   {
      var conn =  new StackExchange.Profiling.Data.EFProfiledDbConnection(GetConnection(), MiniProfiler.Current);
-     return ObjectContextUtils.CreateObjectContext&lt;MyModel&gt;(conn); // resides in the MiniProfiler.EF nuget pack
+     return ObjectContextUtils.CreateObjectContext&lt;MyModel&gt;(conn); // resides in the MiniProfiler.EF5 or MiniProfiler.EF6 nuget pack
   }
 </code></pre>
 
@@ -192,8 +200,8 @@ using (profiler.Step("Doing complex stuff"))
 <p>To work around this an additional parameter has been added to the <code>Initialize</code> call:</p>
 
 <ul>
-<li>If you specify connection strings explicitly in your <code>web.config</code>, use <code>MiniProfilerEF.Initialize();</code>. This will not profile SqlCE or Oracle databases</li>
-<li>If you don't specify connection strings (automatically inferred) and want SqlCE support, use <code>MiniProfilerEF.Initialize(false);</code>.</li>
+	<li>If you specify connection strings explicitly in your <code>web.config</code>, use <code>MiniProfilerEF.Initialize();</code>. This will not profile SqlCE or Oracle databases</li>
+	<li>If you don't specify connection strings (automatically inferred) and want SqlCE support, use <code>MiniProfilerEF.Initialize(false);</code>.</li>
 </ul><p>Note, this should be a temporary solution until EF 4.2 is widely available.</p>
 
 <h2>Various features</h2>
@@ -207,7 +215,7 @@ using (profiler.Step("Doing complex stuff"))
 <h3>What about AJAX?</h3>
 
 <p>The profiler is also able to log all ajax calls: </p>
-
+	
 <p><img src="http://i.stack.imgur.com/3k2NN.png" alt="ajax calls"></p>
 
 <p>You will get one profile timing per ajax call. </p>
@@ -229,7 +237,9 @@ protected void Application_AuthenticateRequest(Object sender, EventArgs e)
 }
 </code></pre>
 
-<h2>Troubleshooting</h2>
+<p>See the <a href="https://github.com/MiniProfiler/dotnet/blob/52e44229ca4abae57e40cbfbf1dd38a6f9c1477b/Sample.Mvc/Global.asax.cs#L112"><code>Global.asax.cs</code> file in the Sample.MVC project for a demonstration of more config options that can be used.</p>
+
+<h2>Basic Troubleshooting</h2>
 
 <h3>MiniProfiler isn't showing</h3>
 
@@ -250,28 +260,33 @@ protected void Application_AuthenticateRequest(Object sender, EventArgs e)
 
 <p>MiniProfiler was designed by the team at <a href="http://stackoverflow.com">Stack Overflow</a>. It is in production use there and on the <a href="http://stackexchange.com">Stack Exchange</a> family of sites. </p>
 
-<p>Also used at: </p>
+<p>Also used at:</p>
 
 <ul>
-<li><a href="http://acturent.com">acturent.com</a></li>
-<li><a href="http://jobseriously.com">jobseriously.com</a></li>
-<li><a href="http://plane9.com">plane9.com</a></li>
-</ul><p>(if you are using this in production please let us know and we will add you to the list)</p>
+	<li><a href="http://acturent.com">acturent.com</a></li>
+	<li><a href="http://jobseriously.com">jobseriously.com</a></li>
+	<li><a href="http://plane9.com">plane9.com</a></li>
+</ul>
+
+<p>(if you are using this in production please let us know and we will add you to the list)</p>
 
 <h3>Frequently Asked Questions</h3>
 
-<p>If you have other questions, please visit <a href="http://stackoverflow.com/questions/tagged/mini-profiler">Stack Overflow</a>.</p>
+<p>If you have other questions, please ask them on <a href="http://stackoverflow.com/questions/tagged/mini-profiler">Stack Overflow</a> or <a href="http://community.miniprofiler.com">community.miniprofiler.com</a>.</p>
       </section>
     </div>
 
     <!-- FOOTER  -->
     <div id="footer_wrap" class="outer">
       <footer class="inner">
-        <p class="copyright">MiniProfiler maintained by <a href="https://github.com/SamSaffron">SamSaffron</a></p>
+        <p class="copyright">MiniProfiler maintained by <a href="https://github.com/orgs/MiniProfiler/members">The Team</a></p>
         <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
       </footer>
     </div>
 
-
+	<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.0.js"></script>  
+	<script>
+	
+	</script>
   </body>
 </html>
