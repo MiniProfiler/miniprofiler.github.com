@@ -147,6 +147,7 @@ using (profiler.Step("Doing complex stuff"))
 						<li><a href="#EF6" data-toggle="tab">EF 6+</a></li>
 						<li><a href="#EF5" data-toggle="tab">EF 4 and 5</a></li>
 						<li><a href="#RavenDb" data-toggle="tab">RavenDb</a></li>
+						<li><a href="#MongoDB" data-toggle="tab">Mongo DB</a></li>
 					</ul>
 					
 					<!-- Tab panes -->
@@ -193,7 +194,7 @@ public static MyModel Get()
 	return ObjectContextUtils.CreateObjectContext&lt;MyModel&gt;(conn);
 }
 </code></pre>
-							<strong>Entity Framework - Code First</strong>
+							<p><strong>Entity Framework - Code First</strong></p>
 
 							<p>MVC Mini Profiler can be hooked in to an EF code first project. To do so: </p>
 
@@ -227,12 +228,37 @@ public static MyModel Get()
 						</div>
 						<div class="tab-pane" id="RavenDb">
 							<p>Include the <a href="https://www.nuget.org/packages/MiniProfiler.Raven">MiniProfiler.Raven nuget package</a> and call <code>MiniProfilerRaven.InitializeFor(store)</code> when you initialize your Raven <code>DocumentStore</code> (please note that <code>EmbeddableDocumentStore</code>
-is not supported).
+is not supported).</p>
 <pre><code>var store = new DocumentStore();
 store.Initialize();
 
 // Initialize MiniProfiler
 MiniProfilerRaven.InitializeFor(store);</code></pre>				
+						</div>
+						<div class="tab-pane" id="MongoDB">
+							<p><strong>Profiling MongoDB</strong></p>
+							<p>Include the <a href="https://www.nuget.org/packages/MiniProfiler.MongoDb">MiniProfiler.MongoDB nuget package</a> and use this pattern to wrap your existing connections:</p>
+<pre><code>using StackExchange.Profiling.MongoDB;
+...
+public MongoClient Client { get; }
+
+private MongoServer _server;
+public MongoServer Server
+{
+    get
+    {
+        if (_server == null)
+        {
+            // Client property can return plain MongoClient object
+            _server = new ProfiledMongoServer(Client.GetServer());
+        }
+        return _server;
+    }
+}</code></pre>
+							<p>After that you just have to get the references to your databases, collections from this <code>ProfiledMongoServer</code> property and that's it.</p>
+							<p><strong>Using MongoDB storage for profiler data</strong></p>
+							<p>To use the storage simply create an instance of <code>MongoDbStorage</code> type and assign it to <code>MiniProfiler.Settings.Storage</code> property:</p>
+<pre><code>MiniProfiler.Settings.Storage = new MongoDbStorage("mongodb://localhost");</code></pre>
 						</div>
 					</div>
 
