@@ -133,6 +133,50 @@ using (profiler.Step("Doing complex stuff"))
 					<div class="row"><div class="col-md-8 col-md-offset-2">
 						<img src="http://i.imgur.com/PsjLY.png" alt="demo" class="img-thumbnail">
 					</div></div>
+					
+					<h3>Profiler Security</h3>
+
+                  <h4>Accessing last profiled request</h4>
+
+                  <p>Profiling information can be viewed for the last profiled request by navigating to</p>
+                  <code>~/mini-profiler-resources/results</code>
+                  <p>This resource is <strong>accessible to all by default</strong>, so you should assign a predicate delegate to <code>MiniProfiler.Settings.Results_Authorize</code> to restrict access. A good place to do this is in <code>Global.asax.cs</code>:</p>
+
+<pre><code>protected void Application_Start(object sender, EventArgs e) 
+{
+   MiniProfiler.Settings.Results_Authorize = IsUserAllowedToSeeMiniProfilerUI;
+}
+private bool IsUserAllowedToSeeMiniProfilerUI(HttpRequest httpRequest)
+{
+    // Implement your own logic for who 
+    // should be able to access ~/mini-profiler-resources/results
+    var principal = httpRequest.RequestContext.HttpContext.User;
+    return principal.IsInRole("Developer");   
+}
+</code></pre>
+
+                  <h4>Accessing last 100 profiled requests</h4>
+
+                  <p>Similarly, profiling information for the last 100 profiled requests can be viewed at</p>
+                  <code>~/mini-profiler-resources/results-index</code>
+                  <p>Access to this resource <strong>is disabled by default</strong> but this can be changed by assigning a predicate delegate to
+                  <code>MiniProfiler.Settings.Results_List_Authorize</code>:
+                  </p>
+
+<pre><code>protected void Application_Start(object sender, EventArgs e) 
+{
+   MiniProfiler.Settings.Results_List_Authorize = IsUserAllowedToSeeMiniProfilerUI;
+}
+private bool IsUserAllowedToSeeMiniProfilerUI(HttpRequest httpRequest)
+{
+    // Implement your own logic for who 
+    // should be able to access ~/mini-profiler-resources/results-index
+    var principal = httpRequest.RequestContext.HttpContext.User;
+    return principal.IsInRole("Developer");   
+}
+</code></pre>
+
+                  <p>In using these profiling resources, it is possible to profile requests for <em>any/all users</em> but restrict access to viewing the results only to certain users.</p>
 
 					<h3>Database profiling</h3>
 
