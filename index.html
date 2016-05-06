@@ -29,7 +29,7 @@
     <!-- MAIN CONTENT -->
 	<div id="main_content_wrap">
 		<div class="container">
-			<div class="row">	
+			<div class="row">
 				<div class="col-md-8 col-md-offset-2">
 					<p>A simple but effective mini-profiler for <a href="https://github.com/MiniProfiler/dotnet">.NET</a>, <a href="https://github.com/MiniProfiler/rack-mini-profiler">Ruby</a>, <a href="https://github.com/MiniProfiler/go">Go</a> and <a href="https://github.com/MiniProfiler/node">Node.js</a>.</p>
 
@@ -49,9 +49,9 @@
 						<li>An ADO.NET profiler, capable of profiling calls on raw ADO.NET (SQL Server, Oracle, etc), LINQ-to-SQL, EF (including <em>Code First</em>), <a href="http://www.mindscapehq.com/blog/index.php/2011/07/28/using-the-asp-net-mvc-mini-profiler-with-lightspeed/">Lightspeed</a> and a range of other data access scenarios</li>
 						<li>A pragmatic <code>Step</code> instrumentation that you can add to code you want to explicitly profile</li>
 					</ul>
-					
+
 					<p>Simple. Fast. Pragmatic. Useful.</p>
-					
+
 					<h2>Getting Started on .Net:</h2>
 					<p>Hook up your application with at least one of the following packages are available on nuget:</p>
 					<ul>
@@ -64,7 +64,8 @@
 						<li><code><a href="https://www.nuget.org/packages/MiniProfiler.Raven/">MiniProfiler.Raven</a></code> - Profile <a href="http://ravendb.net">RavenDb</a> connections</li>
 						<li><code><a href="https://www.nuget.org/packages/MiniProfiler.WCF">MiniProfiler.WCF</a></code> - Profile WCF</li>
 						<li><code><a href="https://www.nuget.org/packages/MiniProfiler.MongoDb">MiniProfiler.MongoDb</a></code> - Profile MongoDb</li>
-					</ul>
+            					<li><code><a href="https://www.nuget.org/packages/MiniProfiler.SharpSapRfc">MiniProfiler.SharpSapRfc</a></code> - Profile SAP RFC</li>
+          </ul>
 
 					<pre style="background-color: #202020;border: 4px solid silver;border-radius: 5px;-moz-border-radius: 5px;-webkit-border-radius: 5px;box-shadow: 2px 2px 3px #6e6e6e;color: #E2E2E2;display: block;font: 1.5em 'andale mono', 'lucidaconsole', monospace;line-height: 1.5em;overflow: auto;padding: 15px;">PM> Install-Package MiniProfiler</pre>
 
@@ -87,13 +88,13 @@
 					<p>The sample project starts profiling in <code>Global.asax.cs</code> <code>Application_BeginRequest</code>:</p>
 
 <pre><code>using StackExchange.Profiling;
-...    
+...
 protected void Application_BeginRequest()
 {
     if (Request.IsLocal)
     {
         MiniProfiler.Start();
-    } 
+    }
 }
 </code></pre>
 
@@ -129,11 +130,11 @@ using (profiler.Step("Doing complex stuff"))
 </code></pre>
 
 					<p>If all goes well, you'll see something like this:</p>
-										
+
 					<div class="row"><div class="col-md-8 col-md-offset-2">
 						<img src="http://i.imgur.com/PsjLY.png" alt="demo" class="img-thumbnail">
 					</div></div>
-					
+
 					<h3>Profiler Security</h3>
 
                   <h4>Accessing last profiled request</h4>
@@ -142,16 +143,16 @@ using (profiler.Step("Doing complex stuff"))
                   <code>~/mini-profiler-resources/results</code>
                   <p>This resource is <strong>accessible to all by default</strong>, so you should assign a predicate delegate to <code>MiniProfiler.Settings.Results_Authorize</code> to restrict access. A good place to do this is in <code>Global.asax.cs</code>:</p>
 
-<pre><code>protected void Application_Start(object sender, EventArgs e) 
+<pre><code>protected void Application_Start(object sender, EventArgs e)
 {
    MiniProfiler.Settings.Results_Authorize = IsUserAllowedToSeeMiniProfilerUI;
 }
 private bool IsUserAllowedToSeeMiniProfilerUI(HttpRequest httpRequest)
 {
-    // Implement your own logic for who 
+    // Implement your own logic for who
     // should be able to access ~/mini-profiler-resources/results
     var principal = httpRequest.RequestContext.HttpContext.User;
-    return principal.IsInRole("Developer");   
+    return principal.IsInRole("Developer");
 }
 </code></pre>
 
@@ -163,16 +164,16 @@ private bool IsUserAllowedToSeeMiniProfilerUI(HttpRequest httpRequest)
                   <code>MiniProfiler.Settings.Results_List_Authorize</code>:
                   </p>
 
-<pre><code>protected void Application_Start(object sender, EventArgs e) 
+<pre><code>protected void Application_Start(object sender, EventArgs e)
 {
    MiniProfiler.Settings.Results_List_Authorize = IsUserAllowedToSeeMiniProfilerUI;
 }
 private bool IsUserAllowedToSeeMiniProfilerUI(HttpRequest httpRequest)
 {
-    // Implement your own logic for who 
+    // Implement your own logic for who
     // should be able to access ~/mini-profiler-resources/results-index
     var principal = httpRequest.RequestContext.HttpContext.User;
-    return principal.IsInRole("Developer");   
+    return principal.IsInRole("Developer");
 }
 </code></pre>
 
@@ -184,7 +185,7 @@ private bool IsUserAllowedToSeeMiniProfilerUI(HttpRequest httpRequest)
 					<p>The built in database profiler supports any kind of DbConnection. It also supports Entity Framework and Linq-2-SQL.</p>
 					<h4>Usage: </h4>
 					<p>Use a factory to return your connection: </p>
-					
+
 					<ul class="nav nav-tabs">
 						<li class="active"><a href="#DbConnection" data-toggle="tab">DbConnection</a></li>
 						<li><a href="#L2S" data-toggle="tab">Linq-to-Sql</a></li>
@@ -192,8 +193,9 @@ private bool IsUserAllowedToSeeMiniProfilerUI(HttpRequest httpRequest)
 						<li><a href="#EF5" data-toggle="tab">EF 4 and 5</a></li>
 						<li><a href="#RavenDb" data-toggle="tab">RavenDb</a></li>
 						<li><a href="#MongoDB" data-toggle="tab">Mongo DB</a></li>
+						<li><a href="#SharpSapRfc" data-toggle="tab">SAP RFC</a></li>
 					</ul>
-					
+
 					<!-- Tab panes -->
 					<div class="tab-content connections">
 						<div class="tab-pane active" id="DbConnection">
@@ -201,7 +203,7 @@ private bool IsUserAllowedToSeeMiniProfilerUI(HttpRequest httpRequest)
 {
     var cnn = CreateRealConnection(); // A SqlConnection, SqliteConnection ... or whatever
 
-    // wrap the connection with a profiling connection that tracks timings 
+    // wrap the connection with a profiling connection that tracks timings
     return new StackExchange.Profiling.Data.ProfiledDbConnection(cnn, MiniProfiler.Current);
 }
 </code></pre>
@@ -215,17 +217,17 @@ private bool IsUserAllowedToSeeMiniProfilerUI(HttpRequest httpRequest)
       return new DBContext(conn);
    }
 }
-</code></pre>					  
+</code></pre>
 						</div>
 						<div class="tab-pane" id="EF6">
 							<p>Install the <a href="https://www.nuget.org/packages/MiniProfiler.EF6/">MiniProfiler.EF6</a> nuget and use one line of code to initialize for all connections in the app:</p>
 <pre><code>using StackExchange.Profiling;
-...    
+...
 protected void Application_Start()
 {
     MiniProfilerEF6.Initialize();
 }
-</code></pre>							
+</code></pre>
 						</div>
 						<div class="tab-pane" id="EF5">
 							<p>Install the <a href="https://www.nuget.org/packages/MiniProfiler.EF5/">MiniProfiler.EF5 nuget</a> and use the following code to instantiate your connection:</p>
@@ -249,7 +251,7 @@ public static MyModel Get()
 							<p>That's it ... you are done!</p>
 
 							<p>Note: EF Code First will store table metadata in a table called: !EdmMetadata. This metadata uses the provider as part of the entity key. If you initialized your provider as a non-profiled provider, you will have to re-build this metadata. Deleting all the rows from !EdmMetadata may do the trick, alternatively some smarter providers are able to handle this transparently.  </p>
-							
+
 							<p><strong>EF 4.1 Update 1</strong></p>
 
 							<p>Note, that EF 4.1 Update 1 (the version currently on NuGet) has a breaking change which throws the following error when specifying a connection string:</p>
@@ -268,7 +270,7 @@ public static MyModel Get()
 								<li>If you specify connection strings explicitly in your <code>web.config</code>, use <code>MiniProfilerEF.Initialize();</code>. This will not profile SqlCE or Oracle databases</li>
 								<li>If you don't specify connection strings (automatically inferred) and want SqlCE support, use <code>MiniProfilerEF.Initialize(false);</code>.</li>
 							</ul>
-							<p>Note, this should be a temporary solution until EF 4.2 is widely available.</p>					  
+							<p>Note, this should be a temporary solution until EF 4.2 is widely available.</p>
 						</div>
 						<div class="tab-pane" id="RavenDb">
 							<p>Include the <a href="https://www.nuget.org/packages/MiniProfiler.Raven">MiniProfiler.Raven nuget package</a> and call <code>MiniProfilerRaven.InitializeFor(store)</code> when you initialize your Raven <code>DocumentStore</code> (please note that <code>EmbeddableDocumentStore</code>
@@ -277,7 +279,7 @@ is not supported).</p>
 store.Initialize();
 
 // Initialize MiniProfiler
-MiniProfilerRaven.InitializeFor(store);</code></pre>				
+MiniProfilerRaven.InitializeFor(store);</code></pre>
 						</div>
 						<div class="tab-pane" id="MongoDB">
 							<p><strong>Profiling MongoDB</strong></p>
@@ -304,6 +306,23 @@ public MongoServer Server
 							<p>To use the storage simply create an instance of <code>MongoDbStorage</code> type and assign it to <code>MiniProfiler.Settings.Storage</code> property:</p>
 <pre><code>MiniProfiler.Settings.Storage = new MongoDbStorage("mongodb://localhost");</code></pre>
 						</div>
+						<div class="tab-pane" id="SharpSapRfc">
+							<p>Profiling for SAP works for both <strong>SoapSapRfcConnection</strong> and <strong>PlainSapRfcConnection</strong>.</p>
+              <p>Working example is available <a href="https://github.com/goenning/MiniProfiler.SharpSapRfc/tree/master/samples/Sample.Mvc">here</a>.</p>
+<pre><code>
+using SharpSapRfc.Profiling;
+...
+
+public IEnumerable&lt;Customer&gt; GetAllCustomers()
+{
+  using (SapRfcConnection sap = new ProfiledSapRfcConnection(new SoapSapRfcConnection("SAP"), MiniProfiler.Current))
+  {
+      var result = conn.ExecuteFunction("Z_SSRT_GET_ALL_CUSTOMERS");
+      var customers = result.GetTable&lt;Customer&gt;("t_customers");
+  }
+}
+</code></pre>
+						</div>
 					</div>
 
 					<h2>Various features</h2>
@@ -319,7 +338,7 @@ public MongoServer Server
 					<h3>What about AJAX?</h3>
 
 					<p>The profiler is also able to log all ajax calls: </p>
-						
+
 					<div class="row"><div class="col-md-8 col-md-offset-2">
 						<img src="http://i.stack.imgur.com/3k2NN.png" alt="ajax calls" class="img-thumbnail">
 					</div></div>
@@ -332,7 +351,7 @@ public MongoServer Server
 
 <pre><code>protected void Application_BeginRequest()
 {
-   MvcMiniProfiler.MiniProfiler.Start();  
+   MvcMiniProfiler.MiniProfiler.Start();
 }
 protected void Application_AuthenticateRequest(Object sender, EventArgs e)
 {
@@ -384,7 +403,7 @@ protected void Application_AuthenticateRequest(Object sender, EventArgs e)
 	</div>
 	</div> <!-- main content -->
     <!-- FOOTER  -->
-    <div id="footer_wrap" class="container">		
+    <div id="footer_wrap" class="container">
 		<div class="row">
 			<footer class="col-md-8 col-md-offset-2">
 				<p class="copyright">MiniProfiler maintained by <a href="https://github.com/orgs/MiniProfiler/people">The Team</a></p>
@@ -392,7 +411,7 @@ protected void Application_AuthenticateRequest(Object sender, EventArgs e)
 		</div>
     </div>
 
-	<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.0.js"></script>  
+	<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.0.js"></script>
 	<script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
 	<script>
 	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
