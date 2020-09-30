@@ -100,3 +100,10 @@ img {
   max-width: 100%;
   box-shadow: 2px 2px 10px #adadad;
 }
+::-webkit-scrollbar{
+    width: 5px;
+}
+::-webkit-scrollbar-thumb{
+    border-radius: 6px;
+	background:linear-gradient(transparent ,#00c6ff 10%, #80ffbf 50%, #ffa31a 90%);
+}
