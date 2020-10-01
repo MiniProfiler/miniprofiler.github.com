@@ -96,7 +96,7 @@ ul li {
 }
 
 img {
-  width: 100%;
-  max-width: 100%;
+
+  max-width: 200%;
   box-shadow: 2px 2px 10px #adadad;
 }
